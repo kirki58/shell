@@ -11,10 +11,22 @@ int main(){
     if(isatty(STDIN_FILENO)){ 
         printf("--> ");
 
-        int n = 0;
-        char* line = sh_read_line(stdin, &n);
+        char* line = sh_read_line(stdin);
         if(line != NULL){
             printf("Line read: %s\n", line);
+
+            Fifo *tokens = sh_tokenize_line(line);
+
+            void *data = peek(tokens);
+            while (data != NULL) {
+                printf("Token: [%s]\n", (char *) data);
+                dequeue(tokens);
+                data = peek(tokens);
+            }
+            
+            free_fifo(tokens);
+            free(line);
+
             return 0;
         }
     }

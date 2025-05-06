@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "fifo.h"
 
 /* 
@@ -18,14 +19,13 @@
         The buffer containing the read line on success
         NULL on failure
 */
-char *sh_read_line(FILE *stream, int *n);
+char *sh_read_line(FILE *stream);
 
 /*
-    sh_parse_line parses a given string (line) into meaningful tokens.
-    n is the number of characters in that line (which can be obtained from sh_read_line)
+    sh_tokenize_line tokenizes a given string (line) into tokens and puts them inside a queue.
 
     Returns:
-        A queue storing the tokens parsed from the line.
+        A queue storing the tokens obtained from the line.
 */
-Fifo *sh_parse_line(char* line, int n);
+Fifo *sh_tokenize_line(const char* line);
 #endif
