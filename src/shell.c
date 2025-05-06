@@ -23,7 +23,7 @@ char *sh_read_line(FILE *stream){
 Fifo *sh_tokenize_line(const char *line)
 {
     const char *p = line;
-    char* start = line; // Set the start pointer (To be used inside the loop)
+    const char* start = line; // Set the start pointer (To be used inside the loop)
     Fifo *tokens = init_fifo();
 
     do
