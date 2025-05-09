@@ -15,18 +15,16 @@ int main(){
         if(line != NULL){
             printf("Line read: %s\n", line);
 
-            Fifo *tokens = sh_tokenize_line(line);
+            Dynamic_Array *tokens = sh_tokenize_line(line);
 
-            void *data = peek(tokens);
-            while (data != NULL) {
-                printf("Token: [%s]\n", (char *) data);
-                dequeue(tokens);
-                data = peek(tokens);
+            for (size_t i = 0; i < tokens->len; i++)
+            {
+                printf("Token: [%s]\n", tokens->arr[i]);
             }
             
-            free_fifo(tokens);
             free(line);
-
+            free_dynamic_array(tokens);
+            
             return 0;
         }
     }

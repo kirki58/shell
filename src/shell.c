@@ -20,11 +20,11 @@ char *sh_read_line(FILE *stream){
     }
 }
 
-Fifo *sh_tokenize_line(const char *line)
+Dynamic_Array *sh_tokenize_line(const char *line)
 {
     const char *p = line;
     const char* start = line; // Set the start pointer (To be used inside the loop)
-    Fifo *tokens = init_fifo();
+    Dynamic_Array *tokens = init_dynamic_array(DEFAULT_TOKEN_COUNT);
 
     do
     {
@@ -42,7 +42,7 @@ Fifo *sh_tokenize_line(const char *line)
         strncpy(token, start, size_ch);
         token[size_ch] = '\0';
         
-        enqueue(tokens , &token, strlen(token) + 1); // Put the obtained token in the queue (queue automatically allocates memory for the token) + 1 accounts for null terminator because it's not counted by strlen
+        dynamic_array_push(tokens, token); // Put the obtained token in the dynamic array, + 1 accounts for null terminator because it's not counted by strlen
         
         if(*p != '\0'){
             p+=sizeof(char);

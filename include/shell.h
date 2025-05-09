@@ -9,7 +9,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "fifo.h"
+#include <unistd.h>
+#include "dynamic_array.h"
+
+#define DEFAULT_TOKEN_COUNT 10 // Used as a initial size while initialazing the tokens dynamic array.
 
 /* 
     sh_read_line reads a line from a file stream and writes it into a buffer
@@ -27,5 +30,5 @@ char *sh_read_line(FILE *stream);
     Returns:
         A queue storing the tokens obtained from the line.
 */
-Fifo *sh_tokenize_line(const char* line);
+Dynamic_Array *sh_tokenize_line(const char* line);
 #endif
