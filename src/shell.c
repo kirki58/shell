@@ -26,10 +26,22 @@ Dynamic_Array *sh_tokenize_line(const char *line)
     const char* start = line; // Set the start pointer (To be used inside the loop)
     Dynamic_Array *tokens = init_dynamic_array(DEFAULT_TOKEN_COUNT);
 
+    if(tokens == NULL){
+        return NULL;    // Terminate if failed to initialize tokens array
+    }
+
     do
     {
         // When current character is whitespace, skip the character 
         while (isspace(*p)){p+=sizeof(char);} // Skip extra white spaces
+        if(*p == '\0'){
+            break;  // Skip the rest of the loop if '\0' is after white spaces
+            /*
+            Example on what this condition avoids: 
+            "--> Hello Wolrd    \0"
+            Without this condition the tokens would be: ["Hello\0"], ["World\0"], ["\0"]
+            */
+        }
 
         if(p != line && isspace(*(p - sizeof(char))) ){ // Encountered a regular character after white space character (start of a token), and we are not in the first iteration
             start = p;

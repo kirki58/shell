@@ -16,6 +16,9 @@ int main(){
             printf("Line read: %s\n", line);
 
             Dynamic_Array *tokens = sh_tokenize_line(line);
+            if(tokens == NULL){
+                return 1;
+            }
 
             for (size_t i = 0; i < tokens->len; i++)
             {
