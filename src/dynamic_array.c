@@ -19,15 +19,11 @@ Dynamic_Array *init_dynamic_array(size_t cap){
 
 int dynamic_array_push(Dynamic_Array *dyn_arr, char *val)
 {
-    if(dyn_arr == NULL){ // Validation
-        return NULL_DEREF;
-    }
-
     // Firstly, check if the capacity of the array is fully used, if so reallocate the array to a bigger buffer
     if(!(dyn_arr->len < dyn_arr->capacity)){ // Using this condition felt safer than using dyn_arr->len == dyn_arr->capacity
         char** new_buf = (char**) realloc(dyn_arr->arr, dyn_arr->capacity * GROWTH_FACTOR * sizeof(char*));
         if(new_buf == NULL){ // The reallacotion failed, most probably because of insufficent memory
-            return ERROR_ALLOC; // Note: Old buffer is not freed, it's still active to provide flexibility it must be manually freed.
+            return ERROR_ALLOC; // Note: Old buffer is not freed, it's still active to provide flexibility. It must be manually freed.
         }
 
         dyn_arr->arr = new_buf; // The re-allocation succeeded update the arr pointer.
@@ -35,7 +31,7 @@ int dynamic_array_push(Dynamic_Array *dyn_arr, char *val)
     }
 
     size_t val_len = strlen(val);
-    char* val_heap = (char*) malloc(val_len + sizeof(char)); // + sizeof(char) accounts for '\0'
+    char *val_heap = (char*) malloc(val_len + sizeof(char)); // + sizeof(char) accounts for '\0'
     if(val_heap == NULL){
         return ERROR_ALLOC;
     }
@@ -48,14 +44,43 @@ int dynamic_array_push(Dynamic_Array *dyn_arr, char *val)
     return SUCCESS;
 }
 
-void free_dynamic_array(Dynamic_Array *dyn_arr){
+int dynamic_array_equalize(Dynamic_Array *dyn_arr, int should_finalize){
+    char** new_buf;
+    if(should_finalize){ // If should_finalize we should also allocate memory for NULL, which we will put at the end of the array
+        new_buf = (char**) realloc(dyn_arr->arr, (dyn_arr->len + 1) * sizeof(char*) );
+    }
+    else{
+        new_buf = (char**) realloc(dyn_arr->arr, dyn_arr->len * sizeof(char*));
+    }
+
+    if(new_buf == NULL){ // Check if we successfully re-allocated memory
+        return ERROR_ALLOC;
+    }
+
+    
+    //  Change dyn_arr, equalize it's capacity
+    dyn_arr->arr = new_buf;
+
+    if(should_finalize){ // If should_finalize we should put NULL at the end of the array, also incerement dyn_arr->len by 1
+        dyn_arr->arr[dyn_arr->len] = NULL;  // Put NULL at the last element
+        dyn_arr->len++;
+    }
+
+    dyn_arr->capacity = dyn_arr->len;
+    return SUCCESS;
+}
+
+void free_dynamic_array(Dynamic_Array *dyn_arr)
+{
     if(dyn_arr == NULL || dyn_arr->arr == NULL){ // Validate the input before freeing memory
         return;
     }
 
     for (size_t i = 0; i < dyn_arr->len; i++)
     {
-        free(dyn_arr->arr[i]);  // Free allocated heap for strings
+        if(dyn_arr->arr[i]){ // Safetly check to avoid free(NULL)
+            free(dyn_arr->arr[i]); // Free the heap allocated for the string
+        }
     }
     
     free(dyn_arr->arr); // Free the buffer allocated for entire arr, all the capacity

@@ -14,6 +14,12 @@
 
 #define DEFAULT_TOKEN_COUNT 10 // Used as a initial size while initialazing the tokens dynamic array.
 
+typedef struct sh_command{
+    char* name;     // name of the command e.g. "ls" or "/bin/ls", basically the first token in the tokens array
+    char** argv;    // argv, tokens themselves
+    int argc;
+}SH_Command;
+
 /* 
     sh_read_line reads a line from a file stream and writes it into a buffer
     n is a pointer to a passed in integer, where it will write the number of characters read from the line.

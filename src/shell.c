@@ -61,5 +61,6 @@ Dynamic_Array *sh_tokenize_line(const char *line)
         }
     } while (*p != '\0');
 
+    dynamic_array_equalize(tokens, DYNAMIC_ARRAY_FINALIZE);
     return tokens;
 }

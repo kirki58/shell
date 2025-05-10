@@ -17,10 +17,11 @@ int main(){
 
             Dynamic_Array *tokens = sh_tokenize_line(line);
             if(tokens == NULL){
+                fprintf(stderr, "Could not initialize the tokens array, There might be some memory issues.");
                 return 1;
             }
 
-            for (size_t i = 0; i < tokens->len; i++)
+            for (size_t i = 0; i < tokens->len - 1; i++)
             {
                 printf("Token: [%s]\n", tokens->arr[i]);
             }
