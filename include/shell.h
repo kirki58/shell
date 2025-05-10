@@ -37,4 +37,13 @@ char *sh_read_line(FILE *stream);
         A queue storing the tokens obtained from the line.
 */
 Dynamic_Array *sh_tokenize_line(const char* line);
+
+/*
+    sh_parse_tokens parses the given tokens obtained from sh_tokenize_line to a SH_Command struct.
+
+    Returns:
+        The buffer containing the parsed SH_Command
+        NULL on failure
+*/
+SH_Command *sh_parse_tokens(Dynamic_Array *tokens);
 #endif

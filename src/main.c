@@ -16,19 +16,26 @@ int main(){
             printf("Line read: %s\n", line);
 
             Dynamic_Array *tokens = sh_tokenize_line(line);
-            if(tokens == NULL){
-                fprintf(stderr, "Could not initialize the tokens array, There might be some memory issues.");
-                return 1;
-            }
-
-            for (size_t i = 0; i < tokens->len - 1; i++)
-            {
-                printf("Token: [%s]\n", tokens->arr[i]);
-            }
-            
             free(line);
-            free_dynamic_array(tokens);
+
+            SH_Command *command = sh_parse_tokens(tokens);
             
+            printf("name: %s\n", command->name);
+            printf("argc: %d\n",command->argc);
+            printf("argv: [");
+            for (int i = 0; i < command->argc; i++)
+            {
+                printf("%s", command->argv[i]);
+                if(i != command->argc - 1){
+                    printf(", ");
+                }
+            }
+            printf("]\n");
+
+            free_dynamic_array(tokens);  // now command->name and command->argv are dangling pointers
+            command->name = NULL;
+            command->argv = NULL;
+            free(command);
             return 0;
         }
     }

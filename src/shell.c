@@ -64,3 +64,16 @@ Dynamic_Array *sh_tokenize_line(const char *line)
     dynamic_array_equalize(tokens, DYNAMIC_ARRAY_FINALIZE);
     return tokens;
 }
+
+SH_Command *sh_parse_tokens(Dynamic_Array *tokens){
+    SH_Command *command = (SH_Command*) malloc(sizeof(SH_Command));
+    if(command == NULL){
+        return NULL;
+    }
+
+    command->argv = tokens->arr;
+    command->name = tokens->arr[0];
+    command->argc = tokens->len - 1; // Assuming the array is a finalized one, the last element of the array would be NULL
+
+    return command;
+}
