@@ -65,15 +65,43 @@ Dynamic_Array *sh_tokenize_line(const char *line)
     return tokens;
 }
 
-SH_Command *sh_parse_tokens(Dynamic_Array *tokens){
+SH_Command *sh_parse_tokens(Dynamic_Array tokens){
     SH_Command *command = (SH_Command*) malloc(sizeof(SH_Command));
     if(command == NULL){
         return NULL;
     }
 
-    command->argv = tokens->arr;
-    command->name = tokens->arr[0];
-    command->argc = tokens->len - 1; // Assuming the array is a finalized one, the last element of the array would be NULL
+    command->argv = tokens.arr;
+    command->name = tokens.arr[0];
+    command->argc = tokens.len - 1; // Assuming the array is a finalized one, the last element of the array would be NULL
 
     return command;
+}
+
+int sh_execute_command(SH_Command command)
+{
+    pid_t pid;
+    pid = fork(); // Create a child process that is the copy of the current process
+
+    if(pid < 0){ // if pid < 0 is returned, fork failed and we couldn't create a child process
+        fprintf(stderr, "Couldn't create a child process for %s\n", command.name);
+        return ERROR_GENERAL;
+    }
+    // Both child and parent processes continue execution from here
+    else if (pid == 0){  // pid = 0 returned for the child process
+        execvp(command.name, command.argv); // Replace the child's process image with the context of the command
+        
+        // If execvp fails, the process image is not replaced, thus it will continue executing instructions from here
+        // The OS will reclaim everything that belongs to the child process after exiting
+        exit(EXEC_FAIL);
+    }
+    else{ // pid > 0 (pid of the child process), which means that we are in the parent (current shell) process
+        int status;
+        waitpid(pid, &status, 0); // Wait for the given pid to exit, and write it's exit status code to status
+
+        if(WIFEXITED(status) && WEXITSTATUS(status) == EXEC_FAIL){ // if the child process exited with EXEC_FAIL status code return failure
+            fprintf(stderr, "Couldn't replace process image for %s\n", command.name);
+        }
+        return SUCCESS;
+    }
 }

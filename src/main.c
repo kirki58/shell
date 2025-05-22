@@ -9,35 +9,45 @@ int main(){
         If we are in interactive mode display a prompt
     */
     if(isatty(STDIN_FILENO)){ 
-        printf("--> ");
 
-        char* line = sh_read_line(stdin);
-        if(line != NULL){
-            printf("Line read: %s\n", line);
+        while (1)
+        {
+            printf("$$ "); // Prompt
 
-            Dynamic_Array *tokens = sh_tokenize_line(line);
-            free(line);
-
-            SH_Command *command = sh_parse_tokens(tokens);
-            
-            printf("name: %s\n", command->name);
-            printf("argc: %d\n",command->argc);
-            printf("argv: [");
-            for (int i = 0; i < command->argc; i++)
-            {
-                printf("%s", command->argv[i]);
-                if(i != command->argc - 1){
-                    printf(", ");
+            char* line = sh_read_line(stdin);
+            if(line == NULL){
+                if(feof(stdin)){
+                    break;
                 }
+                fprintf(stderr, "Shell failed to read a line from stdin\n");
             }
-            printf("]\n");
+            else{
+                Dynamic_Array *tokens = sh_tokenize_line(line);
+                free(line);
 
-            free_dynamic_array(tokens);  // now command->name and command->argv are dangling pointers
-            command->name = NULL;
-            command->argv = NULL;
-            free(command);
-            return 0;
+                SH_Command *command = sh_parse_tokens(*tokens);
+                
+                // printf("name: %s\n", command->name);
+                // printf("argc: %d\n",command->argc);
+                // printf("argv: [");
+                // for (int i = 0; i < command->argc; i++)
+                // {
+                //     printf("%s", command->argv[i]);
+                //     if(i != command->argc - 1){
+                //         printf(", ");
+                //     }
+                // }
+                // printf("]\n");
+
+                sh_execute_command(*command); 
+
+                free_dynamic_array(tokens);  // now command->name and command->argv are dangling pointers
+                command->name = NULL;
+                command->argv = NULL;
+                free(command);
+            }
         }
+        return 0;
     }
     else{
         printf("Non-Interactive Mode");

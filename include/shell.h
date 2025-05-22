@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "dynamic_array.h"
 
 #define DEFAULT_TOKEN_COUNT 10 // Used as a initial size while initialazing the tokens dynamic array.
@@ -45,5 +47,17 @@ Dynamic_Array *sh_tokenize_line(const char* line);
         The buffer containing the parsed SH_Command
         NULL on failure
 */
-SH_Command *sh_parse_tokens(Dynamic_Array *tokens);
+SH_Command *sh_parse_tokens(Dynamic_Array tokens);
+
+/*
+    sh_execute_command - Executes a given command
+
+    sh_execute_command forks the current (shell) process, and replaces the process image of the child process according to the context of the given command
+    uses fork() and execvp() system calls
+
+    Returns:
+        an exit status
+*/
+int sh_execute_command(SH_Command command);
+
 #endif
